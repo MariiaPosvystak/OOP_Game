@@ -4,9 +4,10 @@ namespace OOP_Game
 {
     public partial class App : Application
     {
-        public App()
+        public App(MainPage page)
         {
             InitializeComponent();
+            MainPage = page;
         }
 
         protected override Window CreateWindow(IActivationState? activationState)

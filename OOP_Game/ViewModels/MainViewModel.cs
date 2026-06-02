@@ -63,21 +63,27 @@ namespace OOP_Game.ViewModels
             bool moved = _gameService.MoveTile(tile);
 
             if (!moved)
+            {
                 return;
+            }
 
-            moves++;
+            Moves++;
 
             RefreshTiles();
+
+            await MainThread.InvokeOnMainThreadAsync(async () =>
+            {
+                await Task.Delay(50);
+            });
 
             if (_gameService.IsSolved())
             {
                 _stopwatch.Stop();
-
                 SaveBestResult();
 
                 await App.Current!.MainPage!.DisplayAlert(
                     "Победа 🎉",
-                    $"Ходы: {moves}\nВремя: {timeText}",
+                    $"Ходы: {Moves}\nВремя: {TimeText}",
                     "OK");
             }
         }

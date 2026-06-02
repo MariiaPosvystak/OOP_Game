@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using OOP_Game.ViewModels;
 
 namespace OOP_Game
 {
@@ -18,7 +19,8 @@ namespace OOP_Game
 #if DEBUG
     		builder.Logging.AddDebug();
 #endif
-
+            builder.Services.AddSingleton<MainViewModel>();
+            builder.Services.AddSingleton<MainPage>();
             return builder.Build();
         }
     }
