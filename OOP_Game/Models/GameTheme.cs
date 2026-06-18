@@ -9,25 +9,25 @@ namespace OOP_Game.Models
         public static List<Theme> Themes =>
         [
             new Theme(
-                "Light",
-                Colors.White,
-                Colors.Black,
-                Colors.LightGray,
-                "OpenSansRegular"),
+            "Light",
+            Colors.White,
+            Colors.Black,
+            Colors.LightGray,
+            "OpenSansRegular"),
 
-            new Theme(
-                "Dark",
-                Colors.Black,
-                Colors.White,
-                Colors.DimGray,
-                "OpenSansRegular"),
+        new Theme(
+            "Dark",
+            Colors.DarkGray,
+            Colors.DimGray,
+            Colors.White,
+            "OpenSansRegular"),
 
-            new Theme(
-                "Neon",
-                Color.FromArgb("#081120"),
-                Colors.Lime,
-                Color.FromArgb("#152642"),
-                "OpenSansRegular")
+        new Theme(
+            "Neon",
+            Color.FromHex("#fe59c2"),
+            Color.FromHex("#bc13fe"),
+            Color.FromHex("#fe019a"),
+            "OpenSansRegular")
         ];
     }
 }

@@ -11,18 +11,19 @@ namespace OOP_Game.Models
         public Color TextColor { get; set; }
         public Color TileColor { get; set; }
         public string FontFamily { get; set; }
-        public Theme(
-            string name,
-            Color backgroundColor,
-            Color textColor,
-            Color tileColor,
-            string fontFamily)
+
+        public Theme(string name, Color bg, Color text, Color tile, string font)
         {
             Name = name;
-            BackgroundColor = backgroundColor;
-            TextColor = textColor;
-            TileColor = tileColor;
-            FontFamily = fontFamily;
+            BackgroundColor = bg;
+            TextColor = text;
+            TileColor = tile;
+            FontFamily = font;
+        }
+        public void Apply(Page page)
+        {
+            page.BackgroundColor = BackgroundColor;
+            page.Resources["AppFont"] = FontFamily;
         }
     }
 }

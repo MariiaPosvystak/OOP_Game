@@ -1,19 +1,20 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using OOP_Game.Models;
-using OOP_Game.Services;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 
 namespace OOP_Game.ViewModels
 {
     public partial class MainViewModel : ObservableObject
     {
-        private readonly GameService _gameService = new();
+        // ======================
+        // GAME CORE
+        // ======================
+        private readonly Game _game = new();
 
-        private readonly Stopwatch _stopwatch = new();
-
-        // ===== GAME STATE =====
+        // ======================
+        // UI STATE
+        // ======================
 
         [ObservableProperty]
         private ObservableCollection<Tile> tiles = new();
@@ -34,24 +35,22 @@ namespace OOP_Game.ViewModels
 
         public MainViewModel()
         {
-            selectedTheme = Themes[0];
+            SelectedTheme = Themes[0];
             StartNewGame();
+            StartTimer();
         }
 
-        // ===== COMMANDS =====
 
         [RelayCommand]
         private void StartNewGame()
         {
-            moves = 0;
+            _game.Start();
+            Moves = 0;
 
-            _gameService.Shuffle();
-
-            tiles = new ObservableCollection<Tile>(_gameService.Tiles);
-
-            _stopwatch.Restart();
-
-            StartTimer();
+            Tiles.Clear();
+            foreach (var t in _game.Tiles)
+                Tiles.Add(t);
+             RefreshTiles();
         }
 
         [RelayCommand]
@@ -60,52 +59,52 @@ namespace OOP_Game.ViewModels
             if (tile.IsEmpty)
                 return;
 
-            bool moved = _gameService.MoveTile(tile);
+            bool moved = _game.MoveTile(tile);
 
             if (!moved)
-            {
                 return;
-            }
 
             Moves++;
 
             RefreshTiles();
 
-            await MainThread.InvokeOnMainThreadAsync(async () =>
+            if (_game.IsSolved())
             {
-                await Task.Delay(50);
-            });
+                _game.Stop();
 
-            if (_gameService.IsSolved())
-            {
-                _stopwatch.Stop();
                 SaveBestResult();
 
                 await App.Current!.MainPage!.DisplayAlert(
-                    "Победа 🎉",
-                    $"Ходы: {Moves}\nВремя: {TimeText}",
+                    "Win 🎉",
+                    _game.GetResult(),
                     "OK");
             }
         }
 
+
         [RelayCommand]
         private void ChangeTheme(Theme theme)
         {
-            selectedTheme = theme;
+            SelectedTheme = theme;
+            theme.Apply(App.Current!.MainPage!);
         }
 
-        // ===== HELPERS =====
 
         private void RefreshTiles()
         {
-            tiles = new ObservableCollection<Tile>(_gameService.Tiles);
+            Tiles.Clear();
+
+            foreach (var t in _game.Tiles)
+                Tiles.Add(t);
         }
 
         private async void StartTimer()
         {
-            while (_stopwatch.IsRunning)
+            while (true)
             {
-                timeText = _stopwatch.Elapsed.ToString(@"mm\:ss");
+                if (_game.IsRunning)
+                    TimeText = _game.TimeText;
+
                 await Task.Delay(500);
             }
         }
@@ -114,10 +113,8 @@ namespace OOP_Game.ViewModels
         {
             int best = Preferences.Get("best_moves", int.MaxValue);
 
-            if (moves < best)
-            {
-                Preferences.Set("best_moves", moves);
-            }
+            if (Moves < best)
+                Preferences.Set("best_moves", Moves);
         }
     }
 }
