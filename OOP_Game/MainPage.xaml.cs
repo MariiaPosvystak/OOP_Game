@@ -1,4 +1,5 @@
-﻿using OOP_Game.ViewModels;
+﻿using Microsoft.Maui.Controls.Shapes;
+using OOP_Game.ViewModels;
 
 namespace OOP_Game;
 
@@ -86,7 +87,6 @@ public partial class MainPage : ContentPage
         header.Add(themePicker);
         header.Add(newGameButton);
 
-        // GAME FIELD
 
         var tilesView = new CollectionView
         {
@@ -94,17 +94,17 @@ public partial class MainPage : ContentPage
             ItemsLayout =
                 new GridItemsLayout(4, ItemsLayoutOrientation.Vertical)
         };
-
+        tilesView.SelectionMode = SelectionMode.None;
         tilesView.ItemTemplate = new DataTemplate(() =>
         {
-            var frame = new Frame
+            var border = new Border
             {
                 Padding = 0,
-                Margin = 3,
-                CornerRadius = 12,
-                HasShadow = true,
-                BackgroundColor = vm.SelectedTheme.TileColor
+                Margin = new Thickness(3),
+                StrokeShape = new RoundRectangle { CornerRadius = 12 },
             };
+            border.SetBinding(Border.BackgroundColorProperty,
+                new Binding("SelectedTheme.TileColor", source: vm));
 
             var label = new Label
             {
@@ -112,13 +112,14 @@ public partial class MainPage : ContentPage
                 FontAttributes = FontAttributes.Bold,
                 HorizontalOptions = LayoutOptions.Center,
                 VerticalOptions = LayoutOptions.Center,
-                TextColor = vm.SelectedTheme.TextColor
             };
-
+            label.SetBinding(Label.TextColorProperty,
+                new Binding("SelectedTheme.TextColor", source: vm));
             label.SetBinding(Label.TextProperty, "DisplayValue");
 
-            var tap = new TapGestureRecognizer();
+            border.Content = label;
 
+            var tap = new TapGestureRecognizer();
             tap.Tapped += (s, e) =>
             {
                 if (((Element)s).BindingContext is Models.Tile tile)
@@ -126,12 +127,9 @@ public partial class MainPage : ContentPage
                     vm.TileTappedCommand.Execute(tile);
                 }
             };
+            border.GestureRecognizers.Add(tap);
 
-            frame.GestureRecognizers.Add(tap);
-
-            frame.Content = label;
-
-            return frame;
+            return border;
         });
 
         root.Add(header);

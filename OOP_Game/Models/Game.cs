@@ -27,6 +27,7 @@ public class Game
         Initialize();
         Shuffle();
         Moves = 0;
+        _stopwatch.Restart(); 
     }
 
     public void Stop()

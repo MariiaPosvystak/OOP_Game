@@ -56,16 +56,9 @@ namespace OOP_Game.ViewModels
         [RelayCommand]
         private async Task TileTapped(Tile tile)
         {
-            if (tile.IsEmpty)
-                return;
-
+            if (tile.IsEmpty) return;
             bool moved = _game.MoveTile(tile);
-
-            if (!moved)
-                return;
-
-            Moves++;
-
+            if (!moved) return;
             RefreshTiles();
 
             if (_game.IsSolved())
